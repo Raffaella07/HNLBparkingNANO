@@ -1,6 +1,6 @@
 # nanoAOD producer customized for BParking analysis 
 
-The focus is on RK/K*/phi analyses.
+The focus is on HNL analyses.
 
 ## Getting started
 
