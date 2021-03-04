@@ -47,8 +47,8 @@ git cms-merge-topic -u CMSBParking:fixKinParticleVtxFitter # unsafe checkout (no
 ```
 
 
-## Add the modifications need for Electron Regression// (preserves now tracks and old energy info) 
-
+## Add the modifications need for Electron Regression  
+#(preserves now tracks and old energy info)
 ```shell
 git cms-addpkg DataFormats/EgammaCandidates 
 cp /afs/cern.ch/user/c/cavalari/public/4Chiara.tar .
