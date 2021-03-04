@@ -22,6 +22,7 @@ from PhysicsTools.BParkingNano.tracksBPark_cff import *
 ## B collections
 from PhysicsTools.BParkingNano.BToKLL_cff import *
 from PhysicsTools.BParkingNano.BToKstarLL_cff import *
+from PhysicsTools.BParkingNano.BToDPiLL_cff import *
 
 
 nanoSequenceOnlyFullSim = cms.Sequence(triggerObjectBParkTables + l1bits)
@@ -45,6 +46,7 @@ def nanoAOD_customizeTrackFilteredBPark(process):
     return process
 
 def nanoAOD_customizeElectronFilteredBPark(process):
+    process.nanoEleSequence     = cms.Sequence( electronsBParkSequence + electronBParkTables)
     process.nanoBKeeSequence     = cms.Sequence( electronsBParkSequence + electronBParkTables)
     process.nanoBKstarEESequence = cms.Sequence( electronsBParkSequence + electronBParkTables)
     return process
@@ -53,6 +55,12 @@ def nanoAOD_customizeTriggerBitsBPark(process):
     process.nanoSequence = cms.Sequence( process.nanoSequence + trgTables)
     return process
 
+def nanoAOD_customizeBToDPiLL(process):
+    process.nanoBDPieeSequence   = cms.Sequence( process.nanoEleSequence + BToDPiEESequence + BToDPiEETable   )
+    process.nanoBDPiMuMuSequence = cms.Sequence( BToDPiMuMuSequence + BToDPiMuMuTable )
+    process.nanoBDPiMueSequence   = cms.Sequence( process.nanoEleSequence + HNLToPiESequence +DToKPiSequence + BToDPiMuESequence    + BToDPiMuETable   )
+    process.nanoBDPieMuSequence = cms.Sequence( process.nanoEleSequence+BToDPiEMuSequence + BToDPiEMuTable )
+    return process
 def nanoAOD_customizeBToKLL(process):
     process.nanoBKeeSequence   = cms.Sequence( process.nanoBKeeSequence + BToKEESequence    + BToKeeTable   )
     process.nanoBKMuMuSequence = cms.Sequence( BToKMuMuSequence + BToKmumuTable )

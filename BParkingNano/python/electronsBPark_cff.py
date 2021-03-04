@@ -12,6 +12,9 @@ from PhysicsTools.BParkingNano.mvaElectronID_BParkRetrain_cff \
     import mvaEleID_BParkRetrain_producer_config
 mvaConfigsForEleProducer.append( mvaEleID_BParkRetrain_producer_config )
 
+from PhysicsTools.BParkingNano.mvaElectronID_BParkReFlatPt_cff \
+    import mvaEleID_BParkReFlatPt_producer_config
+mvaConfigsForEleProducer.append( mvaEleID_BParkReFlatPt_producer_config )
 
 # The producer to compute the MVA input variables which are not accessible with the cut parser
 electronMVAVariableHelper = cms.EDProducer('GsfElectronMVAVariableHelper',
@@ -22,7 +25,7 @@ electronMVAVariableHelper = cms.EDProducer('GsfElectronMVAVariableHelper',
   beamSpot         = cms.InputTag("offlineBeamSpot"),
 conversions = cms.InputTag("allConversions"),
   # miniAOD case
-  #srcMiniAOD              = cms.InputTag('slimmedElectrons',processName=cms.InputTag.skipCurrentProcess()),  
+ # srcMiniAOD              = cms.InputTag('slimmedElectrons',processName=cms.InputTag.skipCurrentProcess()),  
   srcMiniAOD              = cms.InputTag('regressionForEle:regressedElectrons'),
   vertexCollectionMiniAOD = cms.InputTag("offlineSlimmedPrimaryVertices"),
   beamSpotMiniAOD         = cms.InputTag("offlineBeamSpot"),
@@ -34,7 +37,7 @@ electronMVAValueMapProducer = cms.EDProducer(
   # AOD case
   src = cms.InputTag('gedGsfElectrons'),  
   # miniAOD case
-  #srcMiniAOD = cms.InputTag('slimmedElectrons',processName=cms.InputTag.skipCurrentProcess()),  
+ # srcMiniAOD = cms.InputTag('slimmedElectrons',processName=cms.InputTag.skipCurrentProcess()),  
   srcMiniAOD = cms.InputTag('regressionForEle:regressedElectrons'),
     
   # MVA configurations
@@ -135,10 +138,10 @@ regressionForEle = cms.EDProducer(
       maxRawEnergyForLowPtEESigma = cms.double(1200.),
       eleRegs = cms.PSet(
         ecalOnlyMean = cms.PSet(
-            rangeMinLowEt = cms.double(0.2),
-            rangeMaxLowEt = cms.double(2.0),
+            rangeMinLowEt = cms.double(0.2),#0.2
+            rangeMaxLowEt = cms.double(2.0),#2.0
             rangeMinHighEt = cms.double(-1.),
-            rangeMaxHighEt = cms.double(3.0),
+            rangeMaxHighEt = cms.double(3.0),#3.0
             forceHighEnergyTrainingIfSaturated = cms.bool(True),
             lowEtHighEtBoundary = cms.double(999999.),
             ebLowEtForestName = cms.string("gsfElectron_eb_ecalOnly_05To50_mean"),
@@ -147,10 +150,10 @@ regressionForEle = cms.EDProducer(
             eeHighEtForestName = cms.string("gsfElectron_ee_ecalOnly_05To50_mean"),
             ),
         ecalOnlySigma = cms.PSet(
-            rangeMinLowEt = cms.double(0.0002),
-            rangeMaxLowEt = cms.double(0.5),
-            rangeMinHighEt = cms.double(0.0002),
-            rangeMaxHighEt = cms.double(0.5),
+            rangeMinLowEt = cms.double(0.0002),#0.0002
+            rangeMaxLowEt = cms.double(0.5),#0.5
+            rangeMinHighEt = cms.double(0.002),#0.0002
+            rangeMaxHighEt = cms.double(0.5),#0.5,
             forceHighEnergyTrainingIfSaturated = cms.bool(True),
             lowEtHighEtBoundary = cms.double(999999.),
             ebLowEtForestName = cms.string("gsfElectron_eb_ecalOnly_05To50_sigma"),
@@ -160,10 +163,10 @@ regressionForEle = cms.EDProducer(
             ),
         epComb = cms.PSet(
             ecalTrkRegressionConfig = cms.PSet(
-                rangeMinLowEt = cms.double(0.2),
-                rangeMaxLowEt = cms.double(2.0),
-                rangeMinHighEt = cms.double(0.2),
-                rangeMaxHighEt = cms.double(2.0),
+                rangeMinLowEt = cms.double(0.2),#0.2
+                rangeMaxLowEt = cms.double(2.0),#2.0
+                rangeMinHighEt = cms.double(0.2),#0.2
+                rangeMaxHighEt = cms.double(2.0),#2.0
                 lowEtHighEtBoundary = cms.double(999999.),
                 forceHighEnergyTrainingIfSaturated = cms.bool(False),
                 ebLowEtForestName = cms.string('gsfElectron_eb_ecalTrk_05To50_mean'),
@@ -172,10 +175,10 @@ regressionForEle = cms.EDProducer(
                 eeHighEtForestName = cms.string('gsfElectron_ee_ecalTrk_05To50_mean'),
                 ),
             ecalTrkRegressionUncertConfig = cms.PSet(
-                rangeMinLowEt = cms.double(0.0002),
-                rangeMaxLowEt = cms.double(0.5),
-                rangeMinHighEt = cms.double(0.0002),
-                rangeMaxHighEt = cms.double(0.5),
+                rangeMinLowEt = cms.double(0.0002),#0.0002
+                rangeMaxLowEt = cms.double(0.5),#0.5
+                rangeMinHighEt = cms.double(0.0002),#0.0002
+                rangeMaxHighEt = cms.double(0.5),#0.5
                 lowEtHighEtBoundary = cms.double(999999.),
                 forceHighEnergyTrainingIfSaturated = cms.bool(False),
                 ebLowEtForestName = cms.string('gsfElectron_eb_ecalTrk_05To50_sigma'),
@@ -184,7 +187,7 @@ regressionForEle = cms.EDProducer(
                 eeHighEtForestName = cms.string('gsfElectron_ee_ecalTrk_05To50_sigma'),
                 ),
             maxEcalEnergyForComb=cms.double(200.),
-            minEOverPForComb=cms.double(0.025),
+            minEOverPForComb=cms.double(-1),
             maxEPDiffInSigmaForComb=cms.double(15.),
             maxRelTrkMomErrForComb=cms.double(10.),
             )
@@ -204,10 +207,11 @@ electronsForAnalysis = cms.EDProducer(
   unbiasedSeeding = cms.InputTag("lowPtGsfElectronSeedValueMaps","unbiased","RECO"),
   mvaId = cms.InputTag("lowPtGsfElectronExtraID"),
   pfmvaId = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2BParkRetrainRawValues"),
+  pfmvaId_flat = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2BParkReFlatPtRawValues"),
   vertexCollection = cms.InputTag("offlineSlimmedPrimaryVertices"),
   ## cleaning wrt trigger muon [-1 == no cut]
-  drForCleaning_wrtTrgMuon = cms.double(0.03),
-  dzForCleaning_wrtTrgMuon = cms.double(1.),
+  drForCleaning_wrtTrgMuon = cms.double(0.03),#0.03
+  dzForCleaning_wrtTrgMuon = cms.double(1.),#1
   ## cleaning between pfEle and lowPtGsf
   drForCleaning = cms.double(0.03),
   dzForCleaning = cms.double(0.5), ##keep tighter dZ to check overlap of pfEle with lowPt (?)
@@ -246,10 +250,11 @@ electronBParkTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
         vz = Var("vz()",float,doc="z coordinate of vertex position, in cm",precision=6),
         ip3d = Var("abs(dB('PV3D'))",float,doc="3D impact parameter wrt first PV, in cm",precision=10),
         sip3d = Var("abs(dB('PV3D')/edB('PV3D'))",float,doc="3D impact parameter significance wrt first PV, in cm",precision=10),
+        ESCOverP = Var("eSuperClusterOverP()",float,doc="E sc over P ratio",precision=10),
 #        deltaEtaSC = Var("superCluster().eta()-eta()",float,doc="delta eta (SC,ele) with sign",precision=10),
-#        r9 = Var("full5x5_r9()",float,doc="R9 of the supercluster, calculated with full 5x5 region",precision=10),
-#        sieie = Var("full5x5_sigmaIetaIeta()",float,doc="sigma_IetaIeta of the supercluster, calculated with full 5x5 region",precision=10),
-#        hoe = Var("hadronicOverEm()",float,doc="H over E",precision=8),
+        r9 = Var("full5x5_r9()",float,doc="R9 of the supercluster, calculated with full 5x5 region",precision=10),
+        sieie = Var("full5x5_sigmaIetaIeta()",float,doc="sigma_IetaIeta of the supercluster, calculated with full 5x5 region",precision=10),
+#       hoe = Var("hadronicOverEm()",float,doc="H over E",precision=8),
 #        tightCharge = Var("isGsfCtfScPixChargeConsistent() + isGsfScPixChargeConsistent()",int,doc="Tight charge criteria (0:none, 1:isGsfScPixChargeConsistent, 2:isGsfCtfScPixChargeConsistent)"),
         convVeto = Var("passConversionVeto()",bool,doc="pass conversion veto"),
 #        lostHits = Var("gsfTrack.hitPattern.numberOfLostHits('MISSING_INNER_HITS')","uint8",doc="number of missing inner hits"),
@@ -261,6 +266,7 @@ electronBParkTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
         unBiased = Var("userFloat('unBiased')",float,doc="unBiased from seed BDT 20 for pfEle"), 
         mvaId = Var("userFloat('mvaId')",float,doc="MVA ID for low pT, 20 for pfEle"),
         pfmvaId = Var("userFloat('pfmvaId')",float,doc="MVA ID for pfEle, 20 for low pT"),
+        pfmvaId_flat = Var("userFloat('pfmvaId_flat')",float,doc="MVA ID (flat pt retrain) for pfEle, 20 for low pT"),
         fBrem = Var("fbrem()",float,doc="brem fraction from the gsf fit",precision=12),
         isPFoverlap = Var("userInt('isPFoverlap')",bool,doc="flag lowPt ele overlapping with pf in selected_pf_collection",precision=8),
         convOpen = Var("userInt('convOpen')",bool,doc="Matched to a conversion in gsfTracksOpenConversions collection"),

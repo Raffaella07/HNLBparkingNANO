@@ -32,7 +32,7 @@ class ElectronMerger : public edm::global::EDProducer<> {
 
 
 public:
-  bool debug=false; 
+  bool debug=true; 
 
   explicit ElectronMerger(const edm::ParameterSet &cfg):
     triggerMuons_{ consumes<pat::MuonCollection>( cfg.getParameter<edm::InputTag>("trgMuon") )},
@@ -42,6 +42,7 @@ public:
     unBiased_src_{ consumes<edm::ValueMap<float>>( cfg.getParameter<edm::InputTag>("unbiasedSeeding") )},
     mvaId_src_{ consumes<edm::ValueMap<float>>( cfg.getParameter<edm::InputTag>("mvaId") )},
     pf_mvaId_src_{ consumes<edm::ValueMap<float>>( cfg.getParameter<edm::InputTag>("pfmvaId") )},
+    pf_mvaIdFlat_src_{ consumes<edm::ValueMap<float>>( cfg.getParameter<edm::InputTag>("pfmvaId_flat") )},
     vertexSrc_{ consumes<reco::VertexCollection> ( cfg.getParameter<edm::InputTag>("vertexCollection") )},
     conversions_{ consumes<edm::View<reco::Conversion> > ( cfg.getParameter<edm::InputTag>("conversions") )},
     beamSpot_{ consumes<reco::BeamSpot> ( cfg.getParameter<edm::InputTag>("beamSpot") )},
@@ -78,6 +79,7 @@ private:
   const edm::EDGetTokenT<edm::ValueMap<float>> unBiased_src_;
   const edm::EDGetTokenT<edm::ValueMap<float>> mvaId_src_;
   const edm::EDGetTokenT<edm::ValueMap<float>> pf_mvaId_src_;
+  const edm::EDGetTokenT<edm::ValueMap<float>> pf_mvaIdFlat_src_;
   const edm::EDGetTokenT<reco::VertexCollection> vertexSrc_;
   const edm::EDGetTokenT<edm::View<reco::Conversion> > conversions_;
   const edm::EDGetTokenT<reco::BeamSpot> beamSpot_;
@@ -115,6 +117,8 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
   evt.getByToken(mvaId_src_, mvaId);
   edm::Handle<edm::ValueMap<float> > pfmvaId;  
   evt.getByToken(pf_mvaId_src_, pfmvaId);
+  edm::Handle<edm::ValueMap<float> > pfmvaId_flat;  
+  evt.getByToken(pf_mvaIdFlat_src_, pfmvaId_flat);
   // 
   edm::ESHandle<TransientTrackBuilder> theB ;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
@@ -139,11 +143,6 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
   for(auto ele : *pf) {
    ipfele++;
 
-   if (debug) std::cout << "ElectronMerger, Event " << (evt.id()).event() 
-			<< " => PF: ele.superCluster()->rawEnergy() = " << ele.superCluster()->rawEnergy()
-			<< ", ele.correctedEcalEnergy() = " << ele.correctedEcalEnergy()
-			<< ", ele gsf track chi2 = " << ele.gsfTrack()->normalizedChi2()
-			<< ", ele.p = " << ele.p() << std::endl;
 
    //cuts
    if (ele.pt()<ptMin_ || ele.pt() < pf_ptMin_) continue;
@@ -161,6 +160,7 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
    ele.setP4(p4);     
 
    // skip electrons inside tag's jet or from different PV
+
    bool skipEle=true;
    for(const auto & trg : *trgMuon) {
      if(reco::deltaR(ele, trg) < drTrg_cleaning_ && drTrg_cleaning_ > 0)
@@ -176,12 +176,14 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
    // for PF e we set BDT outputs to much higher number than the max
    edm::Ref<pat::ElectronCollection> ref(pf,ipfele);
    float pf_mva_id = float((*pfmvaId)[ref]);
+   float pf_mva_idFlat = float((*pfmvaId_flat)[ref]);
    ele.addUserInt("isPF", 1);
    ele.addUserInt("isLowPt", 0);
    ele.addUserFloat("ptBiased", 20.);
    ele.addUserFloat("unBiased", 20.);
    ele.addUserFloat("mvaId", 20.);
    ele.addUserFloat("pfmvaId", pf_mva_id);
+   ele.addUserFloat("pfmvaId_flat", pf_mva_idFlat);
    ele.addUserFloat("chargeMode", ele.charge());
    ele.addUserInt("isPFoverlap", 0);
 
@@ -204,11 +206,11 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
   for(auto ele : *lowpt) {
     iele++;
 
-    if (debug) std::cout << "ElectronMerger, Event " << (evt.id()).event() 
+ /*   if (debug) std::cout << "ElectronMerger, Event " << (evt.id()).event() 
 			 << " => LPT: ele.superCluster()->rawEnergy() = " << ele.superCluster()->rawEnergy()
 			 << ", ele.correctedEcalEnergy() = " << ele.correctedEcalEnergy()
 			 << ", ele gsf track chi2 = " << ele.gsfTrack()->normalizedChi2()
-			 << ", ele.p = " << ele.p() << std::endl;
+			 << ", ele.p = " << ele.p() << std::endl;*/
    
     //take modes
    if (use_regression_for_p4_) {
@@ -284,7 +286,7 @@ void ElectronMerger::produce(edm::StreamID, edm::Event &evt, edm::EventSetup con
    ele.addUserFloat("unBiased", unbiased_seedBDT);
    ele.addUserFloat("mvaId", mva_id);
    ele.addUserFloat("pfmvaId", 20.);
-
+   ele.addUserFloat("pfmvaId_flat", 20.);
    // Attempt to match electrons to conversions in "gsfTracksOpenConversions" collection
    ConversionInfo info;
    ConversionInfo::match(beamSpot,conversions,ele,info);

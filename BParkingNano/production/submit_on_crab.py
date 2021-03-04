@@ -15,19 +15,19 @@ config.General.workArea = 'BParkingNANO_%s' % production_tag
 
 config.section_('Data')
 config.Data.publication = False
-config.Data.outLFNDirBase = '/store/group/cmst3/group/bpark/%s' % (config.General.workArea)
+config.Data.outLFNDirBase = '/store/user/ratramon/HNLGen_ntuples/'
 config.Data.inputDBS = 'global'
 
 config.section_('JobType')
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = '../test/run_nano_cfg.py'
+config.JobType.psetName = '../test/run_HNLnano_cfg.py'
 config.JobType.maxJobRuntimeMin = 3000
 config.JobType.allowUndistributedCMSSW = True
 config.JobType.inputFiles = ["../test/lowPtEleReg_2018_02062020_nv.db"]
 
 config.section_('User')
 config.section_('Site')
-config.Site.storageSite = 'T2_CH_CERN'
+config.Site.storageSite = 'T2_IT_Rome'
 
 if __name__ == '__main__':
 
