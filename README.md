@@ -1,6 +1,6 @@
 # nanoAOD producer customized for BParking analysis 
 
-The focus is on RK/K*/phi analyses.
+The focus is on HNL analyses.
 
 ## Getting started
 
@@ -45,6 +45,16 @@ git cms-merge-topic -u CMSBParking:GsfTransientTracks # unsafe checkout (no chec
 ```shell
 git cms-merge-topic -u CMSBParking:fixKinParticleVtxFitter # unsafe checkout (no checkdeps), but suggested here
 ```
+
+
+## Add the modifications need for Electron Regression// (preserves now tracks and old energy info) 
+
+```shell
+git cms-addpkg DataFormats/EgammaCandidates 
+cp /afs/cern.ch/user/c/cavalari/public/4Chiara.tar .
+tar -xvf 4Chiara.tar  
+```
+
 
 ## Add the BParkingNano package and build everything
 
