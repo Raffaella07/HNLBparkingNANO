@@ -31,6 +31,9 @@ from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_BParkRetrain
     import mvaEleID_BParkRetrain_producer_config
 mvaConfigsForEleProducer.append( mvaEleID_BParkRetrain_producer_config )
 
+from RecoEgamma.ElectronIdentification.Identification.mvaElectronID_BParkReFlatPt_cff \
+    import mvaEleID_BParkReFlatPt_producer_config
+mvaConfigsForEleProducer.append( mvaEleID_BParkReFlatPt_producer_config )
 electronMVAValueMapProducer = cms.EDProducer('ElectronMVAValueMapProducer',
                                              # The module automatically detects AOD vs miniAOD, so we configure both
                                              #
